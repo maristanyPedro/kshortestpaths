@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+# Virtual Envs for evaluation of results
+results/venv
+results/.ipynb_checkpoints
+
+# SVG files that are automatically generated after running the evaluation scripts
+*.svg
