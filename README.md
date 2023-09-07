@@ -1,5 +1,6 @@
 # kshortestpaths
 C++ implementation of a k-shortest simple path algorithm using biobjective path search as a subroutine.
+To cite the code, please use [![DOI](https://zenodo.org/badge/687943644.svg)](https://zenodo.org/badge/latestdoi/687943644)
 
 ## Platform
 
