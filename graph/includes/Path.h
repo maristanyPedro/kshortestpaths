@@ -93,7 +93,7 @@ public:
         this->forbiddenArcs = forbiddenArcs;
     }
 
-     [[nodiscard]] inline bool valid() const {
+     [[nodiscard]] bool valid() const {
         return this->cost != MAX_COST;
     }
 };

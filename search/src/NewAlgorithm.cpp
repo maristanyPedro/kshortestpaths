@@ -122,41 +122,42 @@ void NewAlgorithm::run() {
         ++solution.unreachedBDAs;
         solution.expansionsFailedBDA += secondShortestSearch.expansions;
     }
-    else {
+    else
+    {
         solution.expansionsSuccessBDA += secondShortestSearch.expansions;
-    }
-    Path* secondShortestPath = this->storePathPtr(ssp);
-    this->updatePseudoTree(0, shortestPath, secondShortestPath);
+        Path* secondShortestPath = this->storePathPtr(ssp);
+        this->updatePseudoTree(0, shortestPath, secondShortestPath);
 
-    heap.push(secondShortestPath, this->solutions.size(), this->k);
-    CostType upperBound = MAX_COST;
-    while (this->solutions.size() < this->k) {
-        if (heap.empty()) {
-            break;
+        heap.push(secondShortestPath, this->solutions.size(), this->k);
+        CostType upperBound = MAX_COST;
+        while (this->solutions.size() < this->k) {
+            if (heap.empty()) {
+                break;
+            }
+            if (this->solutions.size() > k/2) {
+                upperBound = heap.getLastRelevantCost(this->solutions.size(), this->k);
+                //assert(upperBound != MAX_COST);
+            }
+            Path* lastPath = heap.extractMin();
+            this->solutions.push_back(lastPath);
+            this->suffixes.push_back(std::move(this->generateSuffixes(lastPath)));
+            //printf("c= %u\n", lastPath.getTotalCosts());
+            if (lastPath->firstNode(this->G) != this->G.source && lastPath->getPrefix().empty()) {
+                this->buildPrefix(lastPath);
+            }
+            if (this->solutions.size() == this->k) {
+                break;
+            }
+            if (heap.currentBucketSize() + this->solutions.size() >= this->k) {
+                continue;
+            }
+            //////////////////////START PROCESSING EXTRACTED PATH////////////////////////////////
+            if (lastPath->getArcs().size() > 1) {
+                this->secondShortestPathSearch(lastPath, this->solutions.size() - 1, secondShortestSearch, upperBound, heap);
+            }
+            //////////////////////START PROCESSING PARENT OF EXTRACTED PATH////////////////////////////////
+            this->secondShortestPathSearch(this->solutions[lastPath->getParentPathIndex()], lastPath->getParentPathIndex(), secondShortestSearch, upperBound, heap);
         }
-        if (this->solutions.size() > k/2) {
-            upperBound = heap.getLastRelevantCost(this->solutions.size(), this->k);
-            //assert(upperBound != MAX_COST);
-        }
-        Path* lastPath = heap.extractMin();
-        this->solutions.push_back(lastPath);
-        this->suffixes.push_back(std::move(this->generateSuffixes(lastPath)));
-        //printf("c= %u\n", lastPath.getTotalCosts());
-        if (lastPath->firstNode(this->G) != this->G.source && lastPath->getPrefix().empty()) {
-             this->buildPrefix(lastPath);
-        }
-        if (this->solutions.size() == this->k) {
-            break;
-        }
-        if (heap.currentBucketSize() + this->solutions.size() >= this->k) {
-            continue;
-        }
-        //////////////////////START PROCESSING EXTRACTED PATH////////////////////////////////
-        if (lastPath->getArcs().size() > 1) {
-            this->secondShortestPathSearch(lastPath, this->solutions.size() - 1, secondShortestSearch, upperBound, heap);
-        }
-        //////////////////////START PROCESSING PARENT OF EXTRACTED PATH////////////////////////////////
-        this->secondShortestPathSearch(this->solutions[lastPath->getParentPathIndex()], lastPath->getParentPathIndex(), secondShortestSearch, upperBound, heap);
     }
     std::clock_t c_end = std::clock();
 //    this->printPaths();

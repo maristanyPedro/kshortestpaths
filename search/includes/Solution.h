@@ -20,7 +20,7 @@ struct Solution{
     [[nodiscard]] std::string print() const {
         std::stringstream output;
         size_t succeededBDA = bdaSearches - unreachedBDAs;
-        double averageIterationsInSucceededBDAs = expansionsSuccessBDA/succeededBDA;
+        double averageIterationsInSucceededBDAs = succeededBDA > 0 ? expansionsSuccessBDA/succeededBDA : 0;
         double averageIterationsInFailedBDAs = unreachedBDAs > 0 ? expansionsFailedBDA/unreachedBDAs : 0;
         output << duration << ";" << minCost << ";" << maxCost << ";" << solutions << ";" << bdaSearches << ";" << unreachedBDAs << ";" << averageIterationsInSucceededBDAs << ";" << averageIterationsInFailedBDAs;
         return output.str();
